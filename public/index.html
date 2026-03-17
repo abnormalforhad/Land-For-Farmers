@@ -719,6 +719,22 @@
                 }
             }
         },
+        async pushToGlobalFeed(record) {
+            try {
+                // Obfuscate field/location slightly for privacy in global feed
+                const publicRecord = { ...record };
+                if (publicRecord.field) publicRecord.field = "Field in " + (publicRecord.region || "Unknown");
+                if (publicRecord.location) publicRecord.location = "Location near " + (publicRecord.region || "Unknown");
+                
+                await fetch('/api/feed', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ record: publicRecord })
+                });
+            } catch(e) {
+                console.error('Failed to push to global feed:', e);
+            }
+        },
         async incrementGlobalStat(type) {
             try {
                 await fetch('/api/stats', {
@@ -749,37 +765,46 @@
         },
         // ===== WALLET CONNECTION HELPERS =====
         openWalletModal() {
-            // If already connected, show disconnect option
-            if (this.wallet) {
-                this.wallet = null;
-                document.getElementById('wallet-text').textContent = 'Connect Wallet';
-                document.getElementById('wallet-btn').classList.add('btn-outline');
-                document.getElementById('wallet-btn').style.background = '';
-                document.getElementById('wallet-btn').style.color = '';
-                
-                // Clear state
-                this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
-                
-                // Hide features
-                if(document.getElementById('desktop-nav')) document.getElementById('desktop-nav').style.display = 'none';
-                if(document.getElementById('mobile-menu-btn')) document.getElementById('mobile-menu-btn').style.display = 'none';
-                if(document.getElementById('mobile-menu')) document.getElementById('mobile-menu').classList.add('hidden');
-                if(document.getElementById('ai-chat-btn')) document.getElementById('ai-chat-btn').style.display = 'none';
-                if(document.getElementById('ai-chat-panel')) document.getElementById('ai-chat-panel').classList.add('hidden');
-                
-                // Switch to landing
-                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-                document.getElementById('landing')?.classList.add('active');
-                
-                this.updateStats();
-                this.renderRecentUploads();
-                this.toast('Wallet disconnected. Platform locked.');
-                return;
-            }
-            // Detect which wallets are installed and show badges
+            // If already connected, open modal but show disconnect option
             this._detectWallets();
-            document.getElementById('wallet-status').classList.add('hidden');
+            const statusEl = document.getElementById('wallet-status');
+            if (this.wallet) {
+                statusEl.classList.remove('hidden');
+                statusEl.className = 'mb-4 p-3 rounded-xl text-sm text-center bg-gray-800 text-white border border-gray-600';
+                statusEl.innerHTML = `
+                    <div class="mb-2">Connected: ${this.wallet.slice(0, 6)}...${this.wallet.slice(-4)}</div>
+                    <button onclick="app.disconnectWallet()" class="bg-red-500/20 text-red-400 hover:bg-red-500/30 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors">Disconnect</button>
+                `;
+            } else {
+                statusEl.classList.add('hidden');
+            }
             document.getElementById('login-modal').classList.remove('hidden');
+        },
+        disconnectWallet() {
+            this.wallet = null;
+            localStorage.removeItem('connectedWalletProvider');
+            document.getElementById('wallet-text').textContent = 'Connect Wallet';
+            document.getElementById('wallet-btn').classList.add('btn-outline');
+            document.getElementById('wallet-btn').style.background = '';
+            document.getElementById('wallet-btn').style.color = '';
+            
+            // Clear state
+            this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
+            
+            // Hide features
+            if(document.getElementById('desktop-nav')) document.getElementById('desktop-nav').style.display = 'none';
+            if(document.getElementById('mobile-menu-btn')) document.getElementById('mobile-menu-btn').style.display = 'none';
+            if(document.getElementById('mobile-menu')) document.getElementById('mobile-menu').classList.add('hidden');
+            if(document.getElementById('ai-chat-btn')) document.getElementById('ai-chat-btn').style.display = 'none';
+            if(document.getElementById('ai-chat-panel')) document.getElementById('ai-chat-panel').classList.add('hidden');
+            
+            // Switch to landing
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('landing')?.classList.add('active');
+            
+            this.updateStats();
+            this.toast('Wallet disconnected. Platform locked.');
+            document.getElementById('login-modal').classList.add('hidden');
         },
         _detectWallets() {
             const mm = document.getElementById('metamask-badge');
@@ -809,6 +834,7 @@
         async _onWalletConnected(address, providerName) {
             const display = address.slice(0, 6) + '...' + address.slice(-4);
             this.wallet = address;
+            localStorage.setItem('connectedWalletProvider', providerName);
             document.getElementById('wallet-text').textContent = display;
             document.getElementById('wallet-btn').classList.remove('btn-outline');
             document.getElementById('wallet-btn').style.background = '#2D7D46';
@@ -942,41 +968,45 @@
         },
         getRecordCount() { return this.data.soil.length + this.data.crop.length + this.data.weather.length + this.data.yield.length; },
         updateStats() {
-            const rc = this.getRecordCount();
-            document.getElementById('stat-records').textContent = rc;
-            document.getElementById('stat-insights').textContent = Math.max(0, Math.floor(rc * 2.3));
-            document.getElementById('stat-datasets').textContent = this.data.marketplace.length;
-            // Dashboard stats
+            // Dashboard local stats
             const el = id => document.getElementById(id);
-            if(el('dash-records')) el('dash-records').textContent = rc;
+            if(el('dash-records')) el('dash-records').textContent = this.getRecordCount();
             if(el('dash-soil')) el('dash-soil').textContent = this.data.soil.length;
             if(el('dash-crop')) el('dash-crop').textContent = this.data.crop.length;
             if(el('dash-weather')) el('dash-weather').textContent = this.data.weather.length;
             if(el('dash-yield-count')) el('dash-yield-count').textContent = this.data.yield.length;
         },
-        renderRecentUploads() {
-            const all = [];
-            ['soil','crop','weather','yield'].forEach(type => {
-                this.data[type].forEach(r => all.push({...r, _type: type}));
-            });
-            all.sort((a,b) => new Date(b.date||b.harvestDate||0) - new Date(a.date||a.harvestDate||0));
+        async renderRecentUploads() {
             const container = document.getElementById('recent-uploads');
-            if (!all.length) { container.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">No data uploaded yet.</p>'; return; }
-            const icons = {soil:'fa-mountain',crop:'fa-seedling',weather:'fa-cloud-sun',yield:'fa-wheat-awn'};
-            const colors = {soil:'text-green-400',crop:'text-green-400',weather:'text-amber-400',yield:'text-amber-400'};
-            container.innerHTML = all.slice(0,10).map(r => `
-                <div class="bg-forest-900/50 rounded-lg p-4 text-sm mb-3">
-                    <div class="flex items-center gap-3 mb-2">
-                        <i class="fas ${icons[r._type]} ${colors[r._type]}"></i>
-                        <div class="flex-1"><span class="font-medium">${r.field||r.location||'Record'}</span> <span class="text-gray-500">— ${r._type} Blob</span></div>
-                        <span class="text-xs bg-green-400/20 text-green-400 px-2 py-0.5 rounded-full"><i class="fas fa-check-circle mr-1"></i>Verified & Synced</span>
+            try {
+                const res = await fetch('/api/feed');
+                const globalFeed = await res.json();
+                
+                if (!globalFeed || !globalFeed.length) { 
+                    container.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">No data uploaded to the global network yet.</p>'; 
+                    return; 
+                }
+                
+                const icons = {soil:'fa-mountain',crop:'fa-seedling',weather:'fa-cloud-sun',yield:'fa-wheat-awn'};
+                const colors = {soil:'text-green-400',crop:'text-green-400',weather:'text-amber-400',yield:'text-amber-400'};
+                
+                container.innerHTML = globalFeed.slice(0,10).map(r => `
+                    <div class="bg-forest-900/50 rounded-lg p-4 text-sm mb-3">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas ${icons[r._type] || 'fa-database'} ${colors[r._type] || 'text-green-400'}"></i>
+                            <div class="flex-1"><span class="font-medium">${r.field||r.location||'Agricultural Record'}</span> <span class="text-gray-500">— ${r._type || 'Data'} Blob</span></div>
+                            <span class="text-xs bg-green-400/20 text-green-400 px-2 py-0.5 rounded-full"><i class="fas fa-globe mr-1"></i>Global</span>
+                        </div>
+                        <div class="text-xs text-gray-500 font-mono bg-black/30 p-2 rounded flex flex-col gap-1 border border-forest-700/50">
+                            <div class="flex justify-between"><span>Merkle Root:</span> <span class="text-green-500 truncate ml-2" title="${r.merkle || ''}">${(r.merkle || '').slice(0,24)}...</span></div>
+                            <div class="flex justify-between"><span>Chunkset:</span> <span class="text-amber-500/70 truncate ml-2" title="${r.chunkset || ''}">${(r.chunkset || '').slice(0,24)}...</span></div>
+                        </div>
                     </div>
-                    <div class="text-xs text-gray-500 font-mono bg-black/30 p-2 rounded flex flex-col gap-1 border border-forest-700/50">
-                        <div class="flex justify-between"><span>Merkle Root:</span> <span class="text-green-500 truncate ml-2" title="${r.merkle || ''}">${(r.merkle || '').slice(0,24)}...</span></div>
-                        <div class="flex justify-between"><span>Chunkset:</span> <span class="text-amber-500/70 truncate ml-2" title="${r.chunkset || ''}">${(r.chunkset || '').slice(0,24)}...</span></div>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch(e) {
+                console.error("Failed to load global feed", e);
+                container.innerHTML = '<p class="text-red-400 text-sm text-center py-4">Failed to connect to global feed.</p>';
+            }
         },
         renderDashboardChart() {
             const bars = document.getElementById('chart-bars');
@@ -1153,6 +1183,17 @@
     app.updateStats();
     app.renderRecentUploads();
     app.loadGlobalStats();
+
+    // Auto-reconnect wallet if previously connected
+    setTimeout(() => {
+        const lastProvider = localStorage.getItem('connectedWalletProvider');
+        if (lastProvider) {
+            if (lastProvider === 'MetaMask') app.connectMetaMask();
+            else if (lastProvider === 'Coinbase Wallet') app.connectCoinbase();
+            else if (lastProvider === 'Trust Wallet') app.connectTrustWallet();
+            else if (lastProvider === 'Petra (Aptos)') app.connectPetra();
+        }
+    }, 500);
 
     // Publish form
     document.getElementById('form-publish')?.addEventListener('submit', async e => {
