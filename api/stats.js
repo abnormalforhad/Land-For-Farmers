@@ -18,9 +18,9 @@ export default async function handler(req, res) {
             };
 
             return res.status(200).json({
-                records_stored: stats.records_stored || defaultStats.records_stored,
-                ai_insights: stats.ai_insights || defaultStats.ai_insights,
-                marketplace_datasets: stats.marketplace_datasets || defaultStats.marketplace_datasets
+                records_stored: parseInt(stats.records_stored || 0) + defaultStats.records_stored,
+                ai_insights: parseInt(stats.ai_insights || 0) + defaultStats.ai_insights,
+                marketplace_datasets: parseInt(stats.marketplace_datasets || 0) + defaultStats.marketplace_datasets
             });
         } 
         
