@@ -706,7 +706,43 @@
     const app = {
         wallet: null,
         data: {soil:[],crop:[],weather:[],yield:[],marketplace:[]},
-        save() { if(this.wallet) localStorage.setItem('lffData_' + this.wallet, JSON.stringify(this.data)); },
+        async save() { 
+            if(this.wallet) {
+                try {
+                    await fetch('/api/sync?walletAddress=' + this.wallet, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: this.data })
+                    });
+                } catch(e) {
+                    console.error('Failed to sync to cloud backend:', e);
+                }
+            }
+        },
+        async incrementGlobalStat(type) {
+            try {
+                await fetch('/api/stats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type })
+                });
+                this.loadGlobalStats(); // Refresh stats after increment
+            } catch(e) {}
+        },
+        async loadGlobalStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const stats = await res.json();
+                
+                ['stat-records', 'stat-insights', 'stat-datasets'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(!el) return;
+                    if(id === 'stat-records') el.textContent = stats.records_stored;
+                    if(id === 'stat-insights') el.textContent = stats.ai_insights;
+                    if(id === 'stat-datasets') el.textContent = stats.marketplace_datasets;
+                });
+            } catch(e) { console.error('Failed to load global stats:', e); }
+        },
         toast(msg) {
             const t = document.getElementById('toast'); t.textContent = msg;
             t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
@@ -770,7 +806,7 @@
             else if (type === 'success') { el.className = 'mb-4 p-3 rounded-xl text-sm text-center bg-green-400/10 text-green-400 border border-green-400/30'; el.innerHTML = '<i class="fas fa-check-circle mr-2"></i>' + msg; }
             else { el.className = 'mb-4 p-3 rounded-xl text-sm text-center bg-red-400/10 text-red-400 border border-red-400/30'; el.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>' + msg; }
         },
-        _onWalletConnected(address, providerName) {
+        async _onWalletConnected(address, providerName) {
             const display = address.slice(0, 6) + '...' + address.slice(-4);
             this.wallet = address;
             document.getElementById('wallet-text').textContent = display;
@@ -778,13 +814,19 @@
             document.getElementById('wallet-btn').style.background = '#2D7D46';
             document.getElementById('wallet-btn').style.color = 'white';
             
-            // Load user's personal data perfectly isolated to their wallet address
-            const savedData = localStorage.getItem('lffData_' + address);
-            if (savedData) {
-                this.data = JSON.parse(savedData);
-            } else {
-                this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
-                this.save(); // Initialize for this new wallet
+            // Fetch user's personal data perfectly isolated to their wallet address from Cloud
+            try {
+                const res = await fetch('/api/sync?walletAddress=' + address);
+                const result = await res.json();
+                if (result.data) {
+                    this.data = result.data;
+                } else {
+                    this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
+                    await this.save(); // Initialize for this new wallet
+                }
+            } catch (e) {
+                console.error("Failed to load user data from cloud", e);
+                this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]}; // Fallback
             }
             
             // Show features
@@ -1060,7 +1102,7 @@
         return data;
     }
     ['soil','crop','weather','yield'].forEach(type => {
-        document.getElementById('form-'+type)?.addEventListener('submit', e => {
+        document.getElementById('form-'+type)?.addEventListener('submit', async e => {
             e.preventDefault();
             const form = e.target;
             const inputs = form.querySelectorAll('input,select,textarea');
@@ -1082,8 +1124,9 @@
                 if(labels[type][i] && el.value) record[labels[type][i]] = el.value;
             });
             app.data[type].push(record);
-            app.save();
-            app.toast(`${type.charAt(0).toUpperCase()+type.slice(1)} data uploaded to Shelby!`);
+            await app.save();
+            await app.incrementGlobalStat('record');
+            app.toast(`${type.charAt(0).toUpperCase()+type.slice(1)} data uploaded securely to your wallet!`);
             form.reset();
             app.renderRecentUploads();
             app.updateStats();
@@ -1109,9 +1152,10 @@
     // Init
     app.updateStats();
     app.renderRecentUploads();
+    app.loadGlobalStats();
 
     // Publish form
-    document.getElementById('form-publish')?.addEventListener('submit', e => {
+    document.getElementById('form-publish')?.addEventListener('submit', async e => {
         e.preventDefault();
         const inputs = e.target.querySelectorAll('input,select,textarea');
         const d = {name:'', type:'', desc:'', price:'0.002', records:0, reads:0};
@@ -1119,7 +1163,8 @@
         inputs.forEach((el,i) => { if(keys[i] && el.value) d[keys[i]]=el.value; });
         d.reads = 0;
         app.data.marketplace.push(d);
-        app.save();
+        await app.save();
+        await app.incrementGlobalStat('dataset');
         app.toast('Dataset published to marketplace!');
         e.target.reset();
         document.getElementById('publish-form').classList.add('hidden');

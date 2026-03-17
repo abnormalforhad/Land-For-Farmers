@@ -4,6 +4,7 @@
   "description": "AI-Powered Agricultural Platform",
   "private": true,
   "dependencies": {
+    "@vercel/kv": "^3.0.0",
     "groq-sdk": "^0.12.0"
   }
 }
