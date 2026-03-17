@@ -41,7 +41,9 @@
         .toast{position:fixed;bottom:-80px;left:50%;transform:translateX(-50%);background:#064e3b;border:1px solid #059669;color:white;padding:1rem 2rem;border-radius:0.75rem;transition:bottom 0.4s;z-index:200;font-weight:500;box-shadow:0 10px 25px rgba(0,0,0,0.5)}.toast.show{bottom:30px}
         .chart-bar{transition:height 0.8s ease,background 0.3s}.chart-bar:hover{filter:brightness(1.2)}
         .wallet-badge{font-family:'Courier New',monospace;font-size:0.8rem;background:rgba(10,15,13,0.8);padding:0.25rem 0.75rem;border-radius:0.375rem;word-break:break-all}
-        .tab-btn{padding:0.5rem 1rem;border-radius:0.5rem;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s;border:1px solid transparent}.tab-btn.active{background:#059669;color:white;box-shadow:0 4px 12px rgba(5,150,105,0.2)}.tab-btn:not(.active){color:#64748b;border-color:rgba(43,138,110,0.3)}.tab-btn:not(.active):hover{color:#34d399;background:rgba(16,185,129,0.05)}
+        .tab-btn:not(.active):hover{color:#34d399;background:rgba(16,185,129,0.05)}
+        @keyframes shimmer { 100% { left: 125%; } }
+        .animate-\[shimmer_1\.5s_infinite\] { animation: shimmer 1.5s infinite; }
     </style>
 </head>
 <body class="bg-forest-900">
@@ -57,7 +59,7 @@
                     <i class="fas fa-seedling text-green-400 text-2xl"></i>
                     <span class="text-xl font-bold text-white" style="font-family:'Space Grotesk'">Land for <span class="text-green-400">Farmers</span></span>
                 </a>
-                <div class="hidden md:flex items-baseline space-x-1">
+                <div id="desktop-nav" style="display: none;" class="hidden md:flex items-baseline space-x-1">
                     <a data-page="home" class="nav-link active">Home</a>
                     <a data-page="upload" class="nav-link">Upload Data</a>
                     <a data-page="dashboard" class="nav-link">Dashboard</a>
@@ -70,7 +72,7 @@
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0L24 24H0L12 0zm0 10.5L6.3 21h11.4L12 10.5z"/></svg>
                         <span id="wallet-text">Connect Wallet</span>
                     </button>
-                    <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-green-400"><i class="fas fa-bars text-xl"></i></button>
+                    <button id="mobile-menu-btn" style="display: none;" class="md:hidden text-gray-300 hover:text-green-400"><i class="fas fa-bars text-xl"></i></button>
                 </div>
             </div>
         </nav>
@@ -119,8 +121,95 @@
     </div>
 
     <main>
+        <!-- ===== LANDING ===== -->
+        <section id="landing" class="page-section active">
+            <div class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+                <!-- Video Background -->
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-30 mix-blend-screen scale-105" style="filter: blur(4px);">
+                    <source src="https://assets.mixkit.co/videos/12996/12996-720.mp4" type="video/mp4">
+                </video>
+                <div class="absolute inset-0 bg-gradient-to-b from-forest-900/40 via-forest-900/80 to-forest-900 z-0"></div>
+                
+                <!-- Decorative Glows -->
+                <div class="absolute w-[600px] h-[600px] bg-green-500/20 rounded-full blur-[120px] top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div class="absolute w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[120px] top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+
+                <div class="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center">
+                    
+                    <!-- Welcome Card -->
+                    <div class="glass w-full max-w-2xl rounded-3xl p-8 md:p-12 border border-green-500/20 shadow-[0_30px_60px_rgba(16,185,129,0.1)] fade-in visible text-center relative overflow-hidden backdrop-blur-3xl float-anim" style="animation-duration: 6s;">
+                        
+                        <!-- Top abstract shape -->
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-amber-400 to-green-400"></div>
+                        
+                        <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8 text-sm border-amber-400/20">
+                            <span class="pulse-dot w-2 h-2 bg-amber-400 rounded-full inline-block"></span>
+                            <span class="text-amber-400 font-medium tracking-wide uppercase text-xs">Web3 Agricultural Intelligence</span>
+                        </div>
+
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6" style="font-family:'Space Grotesk'">
+                            Welcome to <br />
+                            <span class="gradient-text">Land for Farmers</span>
+                        </h1>
+                        
+                        <p class="text-lg text-gray-300 mb-10 leading-relaxed max-w-xl mx-auto">
+                            The future of farming is decentralized. Connect your wallet to access powerful AI insights, securely store your farm data on Shelby, and participate in our global marketplace.
+                        </p>
+                        
+                        <!-- Actions -->
+                        <div class="flex flex-col items-center space-y-6">
+                            <button class="btn-primary text-lg px-10 py-4 w-full md:w-auto flex items-center justify-center gap-3 overflow-hidden relative group rounded-xl shadow-[0_10px_30px_rgba(5,150,105,0.4)] hover:shadow-[0_15px_40px_rgba(5,150,105,0.6)]" onclick="app.openWalletModal()">
+                                <!-- Shine effect -->
+                                <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                                <i class="fas fa-wallet text-xl relative z-10"></i>
+                                <span class="relative z-10 font-bold">Connect Wallet to Enter</span>
+                                <i class="fas fa-arrow-right ml-1 opacity-70 group-hover:translate-x-2 transition-transform relative z-10"></i>
+                            </button>
+                            
+                            <div class="flex items-center gap-2 text-sm text-gray-400">
+                                <i class="fas fa-shield-alt text-green-400"></i>
+                                <span>Your data is sovereign and completely isolated to your address.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini Features Preview below the card -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 w-full max-w-4xl fade-in visible" style="animation-delay: 0.3s">
+                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 bg-forest-900/60 transition-transform duration-300 hover:-translate-y-2 hover:border-green-400/30">
+                            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 text-green-400 text-xl shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm pb-1">AI Diagnostics</h3>
+                                <p class="text-xs text-gray-400">Instant disease & health analysis</p>
+                            </div>
+                        </div>
+                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 bg-forest-900/60 transition-transform duration-300 hover:-translate-y-2 hover:border-amber-400/30">
+                            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0 text-amber-400 text-xl shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm pb-1">Shelby Storage</h3>
+                                <p class="text-xs text-gray-400">Decentralized, persistent records</p>
+                            </div>
+                        </div>
+                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 bg-forest-900/60 transition-transform duration-300 hover:-translate-y-2 hover:border-blue-400/30">
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 text-blue-400 text-xl shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm pb-1">Data Marketplace</h3>
+                                <p class="text-xs text-gray-400">Monetize your farm insights</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <!-- ===== HOME ===== -->
-        <section id="home" class="page-section active">
+        <section id="home" class="page-section">
             <div class="relative overflow-hidden min-h-[90vh] flex items-center">
                 <!-- Video Background -->
                 <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
@@ -616,8 +705,8 @@
     // ===== APP STATE =====
     const app = {
         wallet: null,
-        data: JSON.parse(localStorage.getItem('lffData') || '{"soil":[],"crop":[],"weather":[],"yield":[],"marketplace":[]}'),
-        save() { localStorage.setItem('lffData', JSON.stringify(this.data)); },
+        data: {soil:[],crop:[],weather:[],yield:[],marketplace:[]},
+        save() { if(this.wallet) localStorage.setItem('lffData_' + this.wallet, JSON.stringify(this.data)); },
         toast(msg) {
             const t = document.getElementById('toast'); t.textContent = msg;
             t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
@@ -631,7 +720,24 @@
                 document.getElementById('wallet-btn').classList.add('btn-outline');
                 document.getElementById('wallet-btn').style.background = '';
                 document.getElementById('wallet-btn').style.color = '';
-                this.toast('Wallet disconnected.');
+                
+                // Clear state
+                this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
+                
+                // Hide features
+                if(document.getElementById('desktop-nav')) document.getElementById('desktop-nav').style.display = 'none';
+                if(document.getElementById('mobile-menu-btn')) document.getElementById('mobile-menu-btn').style.display = 'none';
+                if(document.getElementById('mobile-menu')) document.getElementById('mobile-menu').classList.add('hidden');
+                if(document.getElementById('ai-chat-btn')) document.getElementById('ai-chat-btn').style.display = 'none';
+                if(document.getElementById('ai-chat-panel')) document.getElementById('ai-chat-panel').classList.add('hidden');
+                
+                // Switch to landing
+                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('landing')?.classList.add('active');
+                
+                this.updateStats();
+                this.renderRecentUploads();
+                this.toast('Wallet disconnected. Platform locked.');
                 return;
             }
             // Detect which wallets are installed and show badges
@@ -671,8 +777,41 @@
             document.getElementById('wallet-btn').classList.remove('btn-outline');
             document.getElementById('wallet-btn').style.background = '#2D7D46';
             document.getElementById('wallet-btn').style.color = 'white';
+            
+            // Load user's personal data perfectly isolated to their wallet address
+            const savedData = localStorage.getItem('lffData_' + address);
+            if (savedData) {
+                this.data = JSON.parse(savedData);
+            } else {
+                this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
+                this.save(); // Initialize for this new wallet
+            }
+            
+            // Show features
+            if(document.getElementById('desktop-nav')) document.getElementById('desktop-nav').style.display = '';
+            if(document.getElementById('mobile-menu-btn')) document.getElementById('mobile-menu-btn').style.display = '';
+            if(document.getElementById('ai-chat-btn')) document.getElementById('ai-chat-btn').style.display = 'flex';
+            
+            // Update UI with wallet-specific data
+            this.updateStats();
+            this.renderRecentUploads();
+            if(document.getElementById('dashboard').classList.contains('active')) {
+                this.renderDashboardChart();
+                this.renderInsightsFeed();
+            }
+            if(document.getElementById('marketplace').classList.contains('active')) {
+                this.renderMarketplace();
+            }
+            
+            // Navigate to home if on landing
+            if (document.getElementById('landing')?.classList.contains('active')) {
+                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('home')?.classList.add('active');
+                window.scrollTo({top:0, behavior:'smooth'});
+            }
+
             this._showWalletStatus(`Connected: ${display}`, 'success');
-            this.toast(`Wallet connected via ${providerName}!`);
+            this.toast(`Wallet connected! Data tied to ${display}`);
             setTimeout(() => document.getElementById('login-modal').classList.add('hidden'), 1200);
         },
         _getProvider(flag) {
@@ -881,6 +1020,10 @@
     document.querySelectorAll('[data-page]').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
+            if (!app.wallet) {
+                app.toast('Please connect your wallet first.');
+                return;
+            }
             const page = link.getAttribute('data-page');
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.getElementById(page)?.classList.add('active');
@@ -1010,7 +1153,7 @@
     </script>
 
     <!-- Gemini AI Chatbot Floating Widget -->
-    <div id="ai-chat-btn" onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 transition-all" title="AI Crop Advisor">
+    <div id="ai-chat-btn" style="display: none;" onclick="toggleAIChat()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 transition-all" title="AI Crop Advisor">
         <i class="fas fa-robot text-white text-xl"></i>
         <span class="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full pulse-dot"></span>
     </div>
