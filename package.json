@@ -1,0 +1,9 @@
+{
+  "name": "land-for-farmers",
+  "version": "1.0.0",
+  "description": "AI-Powered Agricultural Platform",
+  "private": true,
+  "dependencies": {
+    "groq-sdk": "^0.12.0"
+  }
+}
