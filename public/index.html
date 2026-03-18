@@ -763,6 +763,19 @@
             const t = document.getElementById('toast'); t.textContent = msg;
             t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
         },
+        switchPage(page) {
+            if(!document.getElementById(page)) return;
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(page).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll(`[data-page="${page}"]`).forEach(n => n.classList.add('active'));
+            window.scrollTo({top:0, behavior:'smooth'});
+            document.getElementById('mobile-menu')?.classList.add('hidden');
+            if(page==='dashboard'){this.renderDashboardChart();this.renderInsightsFeed();}
+            if(page==='marketplace') this.renderMarketplace();
+            this.updateStats();
+            localStorage.setItem('lastPage', page);
+        },
         // ===== WALLET CONNECTION HELPERS =====
         openWalletModal() {
             // If already connected, open modal but show disconnect option
@@ -871,11 +884,10 @@
                 this.renderMarketplace();
             }
             
-            // Navigate to home if on landing
+            // Navigate to last page or home if on landing
             if (document.getElementById('landing')?.classList.contains('active')) {
-                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-                document.getElementById('home')?.classList.add('active');
-                window.scrollTo({top:0, behavior:'smooth'});
+                const targetPage = localStorage.getItem('lastPage') || 'home';
+                this.switchPage(targetPage);
             }
 
             this._showWalletStatus(`Connected: ${display}`, 'success');
@@ -1151,15 +1163,7 @@
                 return;
             }
             const page = link.getAttribute('data-page');
-            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(page)?.classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.querySelectorAll(`[data-page="${page}"]`).forEach(n => n.classList.add('active'));
-            window.scrollTo({top:0, behavior:'smooth'});
-            document.getElementById('mobile-menu')?.classList.add('hidden');
-            if(page==='dashboard'){app.renderDashboardChart();app.renderInsightsFeed();}
-            if(page==='marketplace') app.renderMarketplace();
-            app.updateStats();
+            app.switchPage(page);
         });
     });
 
