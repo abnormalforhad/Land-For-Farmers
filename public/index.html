@@ -892,110 +892,122 @@
         },
 
         // ===== REAL WALLET CONNECTIONS =====
-        async connectMetaMask(silent = false) {
+        async connectMetaMask() {
             const provider = this._getProvider('isMetaMask');
             if (!provider) {
-                if (!silent) this._showWalletStatus('MetaMask not detected. <a href="https://metamask.io/download/" target="_blank" class="underline font-bold">Install MetaMask →</a>', 'error');
+                this._showWalletStatus('MetaMask not detected. <a href="https://metamask.io/download/" target="_blank" class="underline font-bold">Install MetaMask →</a>', 'error');
                 return false;
             }
             try {
-                if (!silent) this._showWalletStatus('Waiting for MetaMask popup...', 'loading');
-                const accounts = await provider.request({ method: silent ? 'eth_accounts' : 'eth_requestAccounts' });
+                this._showWalletStatus('Waiting for MetaMask popup...', 'loading');
+                
+                // Force popup every time by requesting permissions first
+                await provider.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }]
+                });
+
+                const accounts = await provider.request({ method: 'eth_requestAccounts' });
                 if (accounts && accounts.length > 0) {
                     const ethProvider = new ethers.providers.Web3Provider(provider);
                     const signer = ethProvider.getSigner();
                     const address = await signer.getAddress();
                     this._onWalletConnected(address, 'MetaMask');
-                    // Listen for account changes
                     provider.on('accountsChanged', (accs) => {
                         if (accs.length > 0) { this._onWalletConnected(accs[0], 'MetaMask'); }
                         else { this.disconnectWallet(); }
                     });
                     return true;
-                } else if (!silent) {
+                } else {
                     this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                    return false;
                 }
-                // Silent mode: do NOT disconnect — wallet may not be ready yet
-                return false;
             } catch (err) {
                 console.error('MetaMask connection error:', err);
-                if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
                 return false;
             }
         },
-        async connectPetra(silent = false) {
+        async connectPetra() {
             if (typeof window.aptos === 'undefined') {
-                if (!silent) this._showWalletStatus('Petra Wallet not detected. <a href="https://petra.app/" target="_blank" class="underline font-bold">Install Petra →</a>', 'error');
+                this._showWalletStatus('Petra Wallet not detected. <a href="https://petra.app/" target="_blank" class="underline font-bold">Install Petra →</a>', 'error');
                 return false;
             }
             try {
-                if (!silent) this._showWalletStatus('Waiting for Petra popup...', 'loading');
-                let address;
-                if (silent) {
-                    const account = await window.aptos.account();
-                    if (!account) return false; // Don't disconnect, just fail silently
-                    address = account.address;
-                } else {
-                    const response = await window.aptos.connect();
-                    address = response.address;
-                }
+                this._showWalletStatus('Waiting for Petra popup...', 'loading');
+                
+                // Force popup by disconnecting first if needed
+                try { await window.aptos.disconnect(); } catch (e) {}
+
+                const response = await window.aptos.connect();
+                const address = response.address;
                 this._onWalletConnected(address, 'Petra (Aptos)');
                 return true;
             } catch (err) {
                 console.error('Petra connection error:', err);
-                if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
                 return false;
             }
         },
-        async connectCoinbase(silent = false) {
+        async connectCoinbase() {
             const provider = this._getProvider('isCoinbaseWallet');
             if (!provider) {
-                if (!silent) this._showWalletStatus('Coinbase Wallet not detected. <a href="https://www.coinbase.com/wallet" target="_blank" class="underline font-bold">Install Coinbase Wallet →</a>', 'error');
+                this._showWalletStatus('Coinbase Wallet not detected. <a href="https://www.coinbase.com/wallet" target="_blank" class="underline font-bold">Install Coinbase Wallet →</a>', 'error');
                 return false;
             }
             try {
-                if (!silent) this._showWalletStatus('Waiting for Coinbase Wallet popup...', 'loading');
-                const accounts = await provider.request({ method: silent ? 'eth_accounts' : 'eth_requestAccounts' });
+                this._showWalletStatus('Waiting for Coinbase Wallet popup...', 'loading');
+                
+                // Coinbase doesn't always support wallet_requestPermissions well, but we use eth_requestAccounts which usually pops up if disconnected
+                try {
+                    if (provider.disconnect) await provider.disconnect();
+                } catch(e) {}
+
+                const accounts = await provider.request({ method: 'eth_requestAccounts' });
                 if (accounts && accounts.length > 0) {
                     const ethProvider = new ethers.providers.Web3Provider(provider);
                     const signer = ethProvider.getSigner();
                     const address = await signer.getAddress();
                     this._onWalletConnected(address, 'Coinbase Wallet');
                     return true;
-                } else if (!silent) {
+                } else {
                     this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                    return false;
                 }
-                // Silent mode: do NOT disconnect
-                return false;
             } catch (err) {
                 console.error('Coinbase connection error:', err);
-                if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
                 return false;
             }
         },
-        async connectTrustWallet(silent = false) {
+        async connectTrustWallet() {
             const provider = window.trustwallet || this._getProvider('isTrust');
             if (!provider) {
-                if (!silent) this._showWalletStatus('Trust Wallet not detected. <a href="https://trustwallet.com/browser-extension" target="_blank" class="underline font-bold">Install Trust Wallet →</a>', 'error');
+                this._showWalletStatus('Trust Wallet not detected. <a href="https://trustwallet.com/browser-extension" target="_blank" class="underline font-bold">Install Trust Wallet →</a>', 'error');
                 return false;
             }
             try {
-                if (!silent) this._showWalletStatus('Waiting for Trust Wallet popup...', 'loading');
-                const accounts = await provider.request({ method: silent ? 'eth_accounts' : 'eth_requestAccounts' });
+                this._showWalletStatus('Waiting for Trust Wallet popup...', 'loading');
+                
+                await provider.request({
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }]
+                }).catch(() => {});
+
+                const accounts = await provider.request({ method: 'eth_requestAccounts' });
                 if (accounts && accounts.length > 0) {
                     const ethProvider = new ethers.providers.Web3Provider(provider);
                     const signer = ethProvider.getSigner();
                     const address = await signer.getAddress();
                     this._onWalletConnected(address, 'Trust Wallet');
                     return true;
-                } else if (!silent) {
+                } else {
                     this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                    return false;
                 }
-                // Silent mode: do NOT disconnect
-                return false;
             } catch (err) {
                 console.error('Trust Wallet connection error:', err);
-                if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
                 return false;
             }
         },
@@ -1216,23 +1228,7 @@
     app.renderRecentUploads();
     app.loadGlobalStats();
 
-    // Auto-reconnect wallet if previously connected (with retry for slow-loading extensions)
-    async function tryReconnectWallet(attempt = 1) {
-        const lastProvider = localStorage.getItem('connectedWalletProvider');
-        if (!lastProvider || app.wallet) return; // Already connected or no saved provider
-
-        let success = false;
-        if (lastProvider === 'MetaMask') success = await app.connectMetaMask(true);
-        else if (lastProvider === 'Coinbase Wallet') success = await app.connectCoinbase(true);
-        else if (lastProvider === 'Trust Wallet') success = await app.connectTrustWallet(true);
-        else if (lastProvider === 'Petra (Aptos)') success = await app.connectPetra(true);
-
-        // If failed and still have retries, try again after a delay (wallet extension may not be ready)
-        if (!success && attempt < 3) {
-            setTimeout(() => tryReconnectWallet(attempt + 1), 1500 * attempt);
-        }
-    }
-    setTimeout(() => tryReconnectWallet(1), 800);
+    // Removed auto-reconnect to force explicit wallet connection on user action
 
     // Publish form
     document.getElementById('form-publish')?.addEventListener('submit', async e => {
