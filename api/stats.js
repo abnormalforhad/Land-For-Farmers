@@ -18,20 +18,14 @@ export default async function handler(req, res) {
                     stats = await response.json();
                 }
             } catch (e) {
-                // Return defaults if not found
+                // Return zeros if not found
             }
-            
-            // Provide default base stats
-            const defaultStats = {
-                records_stored: 1420,
-                ai_insights: 850,
-                marketplace_datasets: 112
-            };
 
+            // Return only real counts — no fake inflation
             return res.status(200).json({
-                records_stored: parseInt(stats.records_stored || 0) + defaultStats.records_stored,
-                ai_insights: parseInt(stats.ai_insights || 0) + defaultStats.ai_insights,
-                marketplace_datasets: parseInt(stats.marketplace_datasets || 0) + defaultStats.marketplace_datasets
+                records_stored: parseInt(stats.records_stored || 0),
+                ai_insights: parseInt(stats.ai_insights || 0),
+                marketplace_datasets: parseInt(stats.marketplace_datasets || 0)
             });
         } 
         
@@ -70,9 +64,27 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true });
         }
 
+        // DELETE method to reset stats to zero
+        if (req.method === 'DELETE') {
+            const freshStats = {
+                records_stored: 0,
+                ai_insights: 0,
+                marketplace_datasets: 0
+            };
+
+            await put(blobName, JSON.stringify(freshStats), { 
+                access: 'public',
+                contentType: 'application/json',
+                addRandomSuffix: false 
+            });
+
+            return res.status(200).json({ success: true, message: 'Stats reset to zero.' });
+        }
+
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
         console.error('Vercel Blob Stats Error:', error);
         return res.status(500).json({ error: 'Failed to access global stats' });
     }
 }
+

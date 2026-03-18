@@ -60,6 +60,16 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true });
         }
 
+        // DELETE method to reset global feed
+        if (req.method === 'DELETE') {
+            await put(blobName, JSON.stringify([]), { 
+                access: 'public',
+                contentType: 'application/json',
+                addRandomSuffix: false 
+            });
+            return res.status(200).json({ success: true, message: 'Global feed cleared.' });
+        }
+
         return res.status(405).json({ error: 'Method not allowed' });
     } catch (error) {
         console.error('Vercel Blob Feed Error:', error);

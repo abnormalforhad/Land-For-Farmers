@@ -896,7 +896,7 @@
             const provider = this._getProvider('isMetaMask');
             if (!provider) {
                 if (!silent) this._showWalletStatus('MetaMask not detected. <a href="https://metamask.io/download/" target="_blank" class="underline font-bold">Install MetaMask →</a>', 'error');
-                return;
+                return false;
             }
             try {
                 if (!silent) this._showWalletStatus('Waiting for MetaMask popup...', 'loading');
@@ -911,43 +911,47 @@
                         if (accs.length > 0) { this._onWalletConnected(accs[0], 'MetaMask'); }
                         else { this.disconnectWallet(); }
                     });
+                    return true;
                 } else if (!silent) {
                     this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
-                } else {
-                    this.disconnectWallet();
                 }
+                // Silent mode: do NOT disconnect — wallet may not be ready yet
+                return false;
             } catch (err) {
                 console.error('MetaMask connection error:', err);
                 if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                return false;
             }
         },
         async connectPetra(silent = false) {
             if (typeof window.aptos === 'undefined') {
                 if (!silent) this._showWalletStatus('Petra Wallet not detected. <a href="https://petra.app/" target="_blank" class="underline font-bold">Install Petra →</a>', 'error');
-                return;
+                return false;
             }
             try {
                 if (!silent) this._showWalletStatus('Waiting for Petra popup...', 'loading');
                 let address;
                 if (silent) {
                     const account = await window.aptos.account();
-                    if (!account) return this.disconnectWallet();
+                    if (!account) return false; // Don't disconnect, just fail silently
                     address = account.address;
                 } else {
                     const response = await window.aptos.connect();
                     address = response.address;
                 }
                 this._onWalletConnected(address, 'Petra (Aptos)');
+                return true;
             } catch (err) {
                 console.error('Petra connection error:', err);
                 if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                return false;
             }
         },
         async connectCoinbase(silent = false) {
             const provider = this._getProvider('isCoinbaseWallet');
             if (!provider) {
                 if (!silent) this._showWalletStatus('Coinbase Wallet not detected. <a href="https://www.coinbase.com/wallet" target="_blank" class="underline font-bold">Install Coinbase Wallet →</a>', 'error');
-                return;
+                return false;
             }
             try {
                 if (!silent) this._showWalletStatus('Waiting for Coinbase Wallet popup...', 'loading');
@@ -957,21 +961,23 @@
                     const signer = ethProvider.getSigner();
                     const address = await signer.getAddress();
                     this._onWalletConnected(address, 'Coinbase Wallet');
+                    return true;
                 } else if (!silent) {
                     this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
-                } else {
-                    this.disconnectWallet();
                 }
+                // Silent mode: do NOT disconnect
+                return false;
             } catch (err) {
                 console.error('Coinbase connection error:', err);
                 if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                return false;
             }
         },
         async connectTrustWallet(silent = false) {
             const provider = window.trustwallet || this._getProvider('isTrust');
             if (!provider) {
                 if (!silent) this._showWalletStatus('Trust Wallet not detected. <a href="https://trustwallet.com/browser-extension" target="_blank" class="underline font-bold">Install Trust Wallet →</a>', 'error');
-                return;
+                return false;
             }
             try {
                 if (!silent) this._showWalletStatus('Waiting for Trust Wallet popup...', 'loading');
@@ -981,14 +987,16 @@
                     const signer = ethProvider.getSigner();
                     const address = await signer.getAddress();
                     this._onWalletConnected(address, 'Trust Wallet');
+                    return true;
                 } else if (!silent) {
                     this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
-                } else {
-                    this.disconnectWallet();
                 }
+                // Silent mode: do NOT disconnect
+                return false;
             } catch (err) {
                 console.error('Trust Wallet connection error:', err);
                 if (!silent) this._showWalletStatus('Connection rejected or failed. Please try again.', 'error');
+                return false;
             }
         },
         getRecordCount() { return this.data.soil.length + this.data.crop.length + this.data.weather.length + this.data.yield.length; },
@@ -1088,12 +1096,11 @@
         renderMarketplace() {
             const grid = document.getElementById('marketplace-grid');
             if(!grid) return;
-            const defaults = [
-                {name:'Rice Field Soil Analysis — Dhaka',desc:'2 years of soil pH, NPK levels stored as compressed blobs',type:'Soil',records:12400,reads:324,price:'0.50'},
-                {name:'Wheat Disease Image Database',desc:'5,000+ crop images chunked and erasure-coded for ML training',type:'Crop',records:5200,reads:891,price:'1.25'},
-                {name:'Microclimate Weather Observations',desc:'Hyper-local weather telemetry via Aptos smart contract payments',type:'Weather',records:89000,reads:1205,price:'0.10'}
-            ];
-            const all = [...defaults, ...this.data.marketplace];
+            const all = [...this.data.marketplace];
+            if (!all.length) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12"><i class="fas fa-store text-gray-600 text-4xl mb-4 block"></i><p class="text-gray-500">No datasets published yet. Be the first to publish your farm data!</p></div>';
+                return;
+            }
             const typeColors = {Soil:'bg-green-400/20 text-green-400',Crop:'bg-amber-400/20 text-amber-400',Weather:'bg-blue-400/20 text-blue-400',Yield:'bg-purple-400/20 text-purple-400'};
             grid.innerHTML = all.map(d => `
                 <div class="glass rounded-xl p-6 card-hover fade-in visible">
@@ -1209,16 +1216,23 @@
     app.renderRecentUploads();
     app.loadGlobalStats();
 
-    // Auto-reconnect wallet if previously connected
-    setTimeout(() => {
+    // Auto-reconnect wallet if previously connected (with retry for slow-loading extensions)
+    async function tryReconnectWallet(attempt = 1) {
         const lastProvider = localStorage.getItem('connectedWalletProvider');
-        if (lastProvider) {
-            if (lastProvider === 'MetaMask') app.connectMetaMask(true);
-            else if (lastProvider === 'Coinbase Wallet') app.connectCoinbase(true);
-            else if (lastProvider === 'Trust Wallet') app.connectTrustWallet(true);
-            else if (lastProvider === 'Petra (Aptos)') app.connectPetra(true);
+        if (!lastProvider || app.wallet) return; // Already connected or no saved provider
+
+        let success = false;
+        if (lastProvider === 'MetaMask') success = await app.connectMetaMask(true);
+        else if (lastProvider === 'Coinbase Wallet') success = await app.connectCoinbase(true);
+        else if (lastProvider === 'Trust Wallet') success = await app.connectTrustWallet(true);
+        else if (lastProvider === 'Petra (Aptos)') success = await app.connectPetra(true);
+
+        // If failed and still have retries, try again after a delay (wallet extension may not be ready)
+        if (!success && attempt < 3) {
+            setTimeout(() => tryReconnectWallet(attempt + 1), 1500 * attempt);
         }
-    }, 500);
+    }
+    setTimeout(() => tryReconnectWallet(1), 800);
 
     // Publish form
     document.getElementById('form-publish')?.addEventListener('submit', async e => {
