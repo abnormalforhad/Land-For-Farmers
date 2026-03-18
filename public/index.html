@@ -747,7 +747,7 @@
         },
         async loadGlobalStats() {
             try {
-                const res = await fetch('/api/stats');
+                const res = await fetch('/api/stats?t=' + Date.now(), { cache: 'no-store' });
                 const stats = await res.json();
                 
                 ['stat-records', 'stat-insights', 'stat-datasets'].forEach(id => {
@@ -855,7 +855,7 @@
             
             // Fetch user's personal data perfectly isolated to their wallet address from Cloud
             try {
-                const res = await fetch('/api/sync?walletAddress=' + address);
+                const res = await fetch('/api/sync?walletAddress=' + address + '&t=' + Date.now(), { cache: 'no-store' });
                 const result = await res.json();
                 if (result.data) {
                     this.data = result.data;
@@ -1046,7 +1046,7 @@
         async renderRecentUploads() {
             const container = document.getElementById('recent-uploads');
             try {
-                const res = await fetch('/api/feed');
+                const res = await fetch('/api/feed?t=' + Date.now(), { cache: 'no-store' });
                 const globalFeed = await res.json();
                 
                 if (!globalFeed || !globalFeed.length) { 
@@ -1211,8 +1211,10 @@
                     yield:['field','harvestDate','crop','area','yieldTonnes','quality','season','notes']};
                 if(labels[type][i] && el.value) record[labels[type][i]] = el.value;
             });
+            record._type = type;
             app.data[type].push(record);
             await app.save();
+            await app.pushToGlobalFeed(record);
             await app.incrementGlobalStat('record');
             app.toast(`${type.charAt(0).toUpperCase()+type.slice(1)} data uploaded securely to your wallet!`);
             form.reset();

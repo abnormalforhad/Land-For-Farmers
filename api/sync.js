@@ -6,6 +6,8 @@ export default async function handler(req, res) {
         return;
     }
 
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+
     const { walletAddress } = req.query;
 
     if (!walletAddress) {
