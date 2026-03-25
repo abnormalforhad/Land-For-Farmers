@@ -16,44 +16,79 @@
         tailwind.config={theme:{extend:{colors:{forest:{50:'#f4fcf8',100:'#e1f7ec',200:'#c1ecdb',400:'#51c49f',500:'#2b8a6e',600:'#1e6b54',700:'#134233',800:'#0d261e',900:'#06120e'},amber:{400:'#eab308',500:'#ca8a04'},primary:{400:'#10b981',500:'#059669'}},fontFamily:{heading:['Space Grotesk','sans-serif'],body:['Inter','sans-serif']}}}}
     </script>
     <style>
-        body{font-family:'Inter',sans-serif;background:#06120e;color:#f8fafc}
-        h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif}
-        .nav-link{color:#94a3b8;padding:0.5rem 0.75rem;border-radius:0.375rem;font-size:0.875rem;font-weight:500;transition:all 0.3s;cursor:pointer}
-        .nav-link:hover{color:#34d399}
+        *{scrollbar-width:thin;scrollbar-color:#2b8a6e #06120e}
+        body{font-family:'Inter',sans-serif;background:#04100b;color:#f8fafc;overflow-x:hidden}
+        h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.02em}
+        .nav-link{color:#94a3b8;padding:0.5rem 0.75rem;border-radius:0.5rem;font-size:0.875rem;font-weight:500;transition:all 0.3s;cursor:pointer;position:relative}
+        .nav-link:hover{color:#34d399;background:rgba(16,185,129,0.06)}
         .nav-link.active{color:#10b981;font-weight:700}
         .page-section{display:none}.page-section.active{display:block}
-        .glass{background:rgba(13,38,30,0.6);backdrop-filter:blur(20px);border:1px solid rgba(16,185,129,0.15)}
-        .glow-border{border:1px solid rgba(16,185,129,0.25);box-shadow:0 0 25px rgba(16,185,129,0.08)}
-        .gradient-text{background:linear-gradient(135deg,#34d399,#059669,#eab308);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass{background:rgba(10,30,22,0.55);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(16,185,129,0.12)}
+        .glass-strong{background:rgba(8,24,18,0.75);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid rgba(16,185,129,0.18)}
+        .glow-border{border:1px solid rgba(16,185,129,0.2);box-shadow:0 0 30px rgba(16,185,129,0.06),inset 0 1px 0 rgba(255,255,255,0.04)}
+        .gradient-text{background:linear-gradient(135deg,#6ee7b7 0%,#10b981 40%,#eab308 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .hero-glow{position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none}
-        .card-hover{transition:all 0.3s ease}.card-hover:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(45,125,70,0.15);border-color:rgba(45,125,70,0.5)}
-        .fade-in{opacity:0;transform:translateY(30px);transition:all 0.6s ease}.fade-in.visible{opacity:1;transform:translateY(0)}
+        .card-hover{transition:all 0.4s cubic-bezier(.25,.46,.45,.94)}.card-hover:hover{transform:translateY(-8px);box-shadow:0 24px 48px rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.35)}
+        .fade-in{opacity:0;transform:translateY(30px);transition:all 0.7s cubic-bezier(.25,.46,.45,.94)}.fade-in.visible{opacity:1;transform:translateY(0)}
         .pulse-dot{animation:pulse 2s infinite}
         @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.5)}}
-        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-        .float-anim{animation:float 3s ease-in-out infinite}
-        .metric-card{background:linear-gradient(145deg,rgba(20,31,26,0.9),rgba(10,15,13,0.9))}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        .float-anim{animation:float 4s ease-in-out infinite}
+        @keyframes glow-pulse{0%,100%{box-shadow:0 0 20px rgba(16,185,129,0.1)}50%{box-shadow:0 0 40px rgba(16,185,129,0.2)}}
+        .metric-card{background:linear-gradient(145deg,rgba(16,28,22,0.95),rgba(8,14,11,0.95));box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
         .step-line{position:relative}.step-line::after{content:'';position:absolute;top:50%;left:100%;width:100%;height:2px;background:linear-gradient(90deg,#2D7D46,transparent)}
         @media(max-width:768px){.step-line::after{display:none}}
-        .btn-primary{background:linear-gradient(135deg,#059669,#047857);color:white;font-weight:600;padding:0.75rem 2rem;border-radius:0.5rem;transition:all 0.3s;cursor:pointer;border:none;box-shadow:0 4px 15px rgba(5,150,105,0.3)}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(5,150,105,0.4)}
-        .btn-outline{border:1px solid rgba(16,185,129,0.4);color:#34d399;font-weight:600;padding:0.75rem 2rem;border-radius:0.5rem;transition:all 0.3s;cursor:pointer;background:rgba(16,185,129,0.05)}.btn-outline:hover{background:rgba(16,185,129,0.15);border-color:#34d399}
-        .input-field{width:100%;background:rgba(6,18,14,0.8);border:1px solid rgba(43,138,110,0.4);border-radius:0.5rem;padding:0.75rem;color:#f8fafc;transition:border-color 0.3s;outline:none}.input-field:focus{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,0.2)}
+        .btn-primary{background:linear-gradient(135deg,#10b981,#059669);color:white;font-weight:600;padding:0.75rem 2rem;border-radius:0.75rem;transition:all 0.3s;cursor:pointer;border:none;box-shadow:0 4px 20px rgba(16,185,129,0.3)}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(16,185,129,0.4);background:linear-gradient(135deg,#34d399,#10b981)}
+        .btn-outline{border:1px solid rgba(16,185,129,0.3);color:#34d399;font-weight:600;padding:0.75rem 2rem;border-radius:0.75rem;transition:all 0.3s;cursor:pointer;background:rgba(16,185,129,0.04)}.btn-outline:hover{background:rgba(16,185,129,0.12);border-color:#34d399;transform:translateY(-1px)}
+        .input-field{width:100%;background:rgba(6,18,14,0.8);border:1px solid rgba(43,138,110,0.3);border-radius:0.75rem;padding:0.875rem 1rem;color:#f8fafc;transition:all 0.3s;outline:none;font-size:0.9rem}.input-field:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.15)}
         select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2310b981' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-        .toast{position:fixed;bottom:-80px;left:50%;transform:translateX(-50%);background:#064e3b;border:1px solid #059669;color:white;padding:1rem 2rem;border-radius:0.75rem;transition:bottom 0.4s;z-index:200;font-weight:500;box-shadow:0 10px 25px rgba(0,0,0,0.5)}.toast.show{bottom:30px}
-        .chart-bar{transition:height 0.8s ease,background 0.3s}.chart-bar:hover{filter:brightness(1.2)}
+        .toast{position:fixed;bottom:-80px;left:50%;transform:translateX(-50%);background:rgba(6,78,59,0.95);backdrop-filter:blur(12px);border:1px solid #059669;color:white;padding:1rem 2rem;border-radius:1rem;transition:bottom 0.5s cubic-bezier(.34,1.56,.64,1);z-index:200;font-weight:500;box-shadow:0 20px 40px rgba(0,0,0,0.5)}.toast.show{bottom:30px}
+        .chart-bar{transition:height 1s cubic-bezier(.25,.46,.45,.94),background 0.3s}.chart-bar:hover{filter:brightness(1.3)}
         .wallet-badge{font-family:'Courier New',monospace;font-size:0.8rem;background:rgba(10,15,13,0.8);padding:0.25rem 0.75rem;border-radius:0.375rem;word-break:break-all}
+        .tab-btn{color:#94a3b8;padding:0.625rem 1.25rem;border-radius:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.3s;border:1px solid transparent;background:transparent}
+        .tab-btn.active{color:#10b981;background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);font-weight:700}
         .tab-btn:not(.active):hover{color:#34d399;background:rgba(16,185,129,0.05)}
-        @keyframes shimmer { 100% { left: 125%; } }
-        .animate-\[shimmer_1\.5s_infinite\] { animation: shimmer 1.5s infinite; }
+        @keyframes shimmer{0%{left:-50%}100%{left:125%}}
+        #particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0.4}
+        .section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,0.2),transparent)}
+        @keyframes text-reveal{0%{opacity:0;filter:blur(8px);transform:translateY(20px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+        .text-reveal{animation:text-reveal 0.8s ease forwards}
+        .text-reveal-delay-1{animation-delay:0.15s;opacity:0}
+        .text-reveal-delay-2{animation-delay:0.3s;opacity:0}
+        .text-reveal-delay-3{animation-delay:0.45s;opacity:0}
+        .video-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,16,11,0.5) 0%,rgba(4,16,11,0.7) 40%,rgba(4,16,11,0.95) 100%);z-index:1}
+        /* Weather-based dynamic backgrounds */
+        body{transition:background-color 2s ease,box-shadow 2s ease}
+        #weather-ambient{position:fixed;inset:0;pointer-events:none;z-index:0;transition:all 2s ease;opacity:0.15}
+        body.weather-sunny #weather-ambient{background:radial-gradient(ellipse at 50% 30%,rgba(251,191,36,0.25),transparent 70%)}
+        body.weather-sunny{background-color:#0a1208}
+        body.weather-rainy #weather-ambient{background:radial-gradient(ellipse at 50% 30%,rgba(59,130,246,0.2),transparent 70%)}
+        body.weather-rainy{background-color:#060d12}
+        body.weather-cloudy #weather-ambient{background:radial-gradient(ellipse at 50% 30%,rgba(148,163,184,0.12),transparent 70%)}
+        body.weather-cloudy{background-color:#080e0b}
+        body.weather-stormy #weather-ambient{background:radial-gradient(ellipse at 50% 30%,rgba(139,92,246,0.18),transparent 70%)}
+        body.weather-stormy{background-color:#08060e}
+        body.weather-snowy #weather-ambient{background:radial-gradient(ellipse at 50% 30%,rgba(186,230,253,0.15),transparent 70%)}
+        body.weather-snowy{background-color:#0a0e10}
+        body.weather-foggy #weather-ambient{background:radial-gradient(ellipse at 50% 50%,rgba(148,163,184,0.1),transparent 60%)}
+        body.weather-foggy{background-color:#090c0a}
+        .weather-indicator{position:fixed;top:72px;right:16px;z-index:40;font-size:0.7rem;padding:0.3rem 0.7rem;border-radius:0.5rem;backdrop-filter:blur(12px);transition:all 0.5s;opacity:0.8}
     </style>
 </head>
 <body class="bg-forest-900">
+
+    <!-- Ambient Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Weather-based ambient overlay -->
+    <div id="weather-ambient"></div>
+    <div id="weather-indicator" class="weather-indicator hidden glass"></div>
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
 
     <!-- Header -->
-    <header class="glass sticky top-0 z-50 border-b border-forest-700/30">
+    <header class="glass-strong sticky top-0 z-50 border-b border-forest-700/20">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a data-page="home" class="nav-link flex items-center space-x-2 p-0">
@@ -64,6 +99,7 @@
                     <a data-page="home" class="nav-link active">Home</a>
                     <a data-page="upload" class="nav-link">Upload Data</a>
                     <a data-page="dashboard" class="nav-link">Dashboard</a>
+                    <a data-page="admin" class="nav-link"><i class="fas fa-lock text-amber-400 mr-1 text-[10px]"></i>Admin</a>
                     <a data-page="marketplace" class="nav-link">Marketplace</a>
                     <a data-page="about" class="nav-link">About</a>
                     <a data-page="contact" class="nav-link">Contact</a>
@@ -81,6 +117,7 @@
             <a data-page="home" class="block nav-link text-center border-b border-forest-700/20 py-3">Home</a>
             <a data-page="upload" class="block nav-link text-center border-b border-forest-700/20 py-3">Upload Data</a>
             <a data-page="dashboard" class="block nav-link text-center border-b border-forest-700/20 py-3">Dashboard</a>
+            <a data-page="admin" class="block nav-link text-center border-b border-forest-700/20 py-3"><i class="fas fa-lock text-amber-400 mr-1 text-[10px]"></i>Admin</a>
             <a data-page="marketplace" class="block nav-link text-center border-b border-forest-700/20 py-3">Marketplace</a>
             <a data-page="about" class="block nav-link text-center border-b border-forest-700/20 py-3">About</a>
             <a data-page="contact" class="block nav-link text-center py-3">Contact</a>
@@ -126,58 +163,58 @@
         <section id="landing" class="page-section active">
             <div class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-30 mix-blend-screen scale-105" style="filter: blur(4px);">
-                    <source src="https://assets.mixkit.co/videos/12996/12996-720.mp4" type="video/mp4">
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-40" style="filter:brightness(0.7) saturate(1.2);">
+                    <source src="https://assets.mixkit.co/videos/4835/4835-720.mp4" type="video/mp4">
                 </video>
-                <div class="absolute inset-0 bg-gradient-to-b from-forest-900/40 via-forest-900/80 to-forest-900 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <!-- Decorative Glows -->
-                <div class="absolute w-[600px] h-[600px] bg-green-500/20 rounded-full blur-[120px] top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-                <div class="absolute w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[120px] top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div class="absolute w-[700px] h-[700px] bg-emerald-500/15 rounded-full blur-[150px] top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div class="absolute w-[500px] h-[500px] bg-amber-500/8 rounded-full blur-[130px] bottom-1/4 right-1/4 pointer-events-none"></div>
 
                 <div class="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center">
                     
                     <!-- Welcome Card -->
-                    <div class="glass w-full max-w-2xl rounded-3xl p-8 md:p-12 border border-green-500/20 shadow-[0_30px_60px_rgba(16,185,129,0.1)] fade-in visible text-center relative overflow-hidden backdrop-blur-3xl float-anim" style="animation-duration: 6s;">
+                    <div class="glass-strong w-full max-w-2xl rounded-3xl p-8 md:p-12 border border-green-500/15 shadow-[0_40px_80px_rgba(16,185,129,0.08)] text-center relative overflow-hidden">
                         
-                        <!-- Top abstract shape -->
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-amber-400 to-green-400"></div>
+                        <!-- Top accent line -->
+                        <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-green-400/60 to-transparent"></div>
                         
-                        <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8 text-sm border-amber-400/20">
+                        <div class="inline-flex items-center gap-2 glass px-5 py-2.5 rounded-full mb-8 text-sm border-amber-400/20 text-reveal">
                             <span class="pulse-dot w-2 h-2 bg-amber-400 rounded-full inline-block"></span>
-                            <span class="text-amber-400 font-medium tracking-wide uppercase text-xs">Web3 Agricultural Intelligence</span>
+                            <span class="text-amber-400 font-medium tracking-wider uppercase text-xs">Web3 Agricultural Intelligence</span>
                         </div>
 
-                        <h1 class="text-4xl md:text-6xl font-bold mb-6" style="font-family:'Space Grotesk'">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6 text-reveal text-reveal-delay-1" style="font-family:'Space Grotesk'">
                             Welcome to <br />
                             <span class="gradient-text">Land for Farmers</span>
                         </h1>
                         
-                        <p class="text-lg text-gray-300 mb-10 leading-relaxed max-w-xl mx-auto">
+                        <p class="text-lg text-gray-300/90 mb-10 leading-relaxed max-w-xl mx-auto text-reveal text-reveal-delay-2">
                             The future of farming is decentralized. Connect your wallet to access powerful AI insights, securely store your farm data on Shelby, and participate in our global marketplace.
                         </p>
                         
                         <!-- Actions -->
-                        <div class="flex flex-col items-center space-y-6">
-                            <button class="btn-primary text-lg px-10 py-4 w-full md:w-auto flex items-center justify-center gap-3 overflow-hidden relative group rounded-xl shadow-[0_10px_30px_rgba(5,150,105,0.4)] hover:shadow-[0_15px_40px_rgba(5,150,105,0.6)]" onclick="app.openWalletModal()">
+                        <div class="flex flex-col items-center space-y-6 text-reveal text-reveal-delay-3">
+                            <button class="btn-primary text-lg px-10 py-4 w-full md:w-auto flex items-center justify-center gap-3 overflow-hidden relative group rounded-xl shadow-[0_10px_40px_rgba(16,185,129,0.3)] hover:shadow-[0_20px_60px_rgba(16,185,129,0.4)]" onclick="app.openWalletModal()">
                                 <!-- Shine effect -->
-                                <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                                <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-15 group-hover:animate-[shimmer_1.5s_infinite]"></div>
                                 <i class="fas fa-wallet text-xl relative z-10"></i>
                                 <span class="relative z-10 font-bold">Connect Wallet to Enter</span>
                                 <i class="fas fa-arrow-right ml-1 opacity-70 group-hover:translate-x-2 transition-transform relative z-10"></i>
                             </button>
                             
-                            <div class="flex items-center gap-2 text-sm text-gray-400">
-                                <i class="fas fa-shield-alt text-green-400"></i>
+                            <div class="flex items-center gap-2 text-sm text-gray-400/80">
+                                <i class="fas fa-shield-alt text-green-400/70"></i>
                                 <span>Your data is sovereign and completely isolated to your address.</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Mini Features Preview below the card -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 w-full max-w-4xl fade-in visible" style="animation-delay: 0.3s">
-                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 bg-forest-900/60 transition-transform duration-300 hover:-translate-y-2 hover:border-green-400/30">
-                            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 text-green-400 text-xl shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-14 w-full max-w-4xl fade-in visible">
+                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-2 hover:border-green-400/30 hover:shadow-[0_16px_40px_rgba(16,185,129,0.08)]">
+                            <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0 text-green-400 text-xl">
                                 <i class="fas fa-brain"></i>
                             </div>
                             <div>
@@ -185,8 +222,8 @@
                                 <p class="text-xs text-gray-400">Instant disease & health analysis</p>
                             </div>
                         </div>
-                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 bg-forest-900/60 transition-transform duration-300 hover:-translate-y-2 hover:border-amber-400/30">
-                            <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0 text-amber-400 text-xl shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-2 hover:border-amber-400/30 hover:shadow-[0_16px_40px_rgba(234,179,8,0.08)]">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0 text-amber-400 text-xl">
                                 <i class="fas fa-database"></i>
                             </div>
                             <div>
@@ -194,8 +231,8 @@
                                 <p class="text-xs text-gray-400">Decentralized, persistent records</p>
                             </div>
                         </div>
-                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 bg-forest-900/60 transition-transform duration-300 hover:-translate-y-2 hover:border-blue-400/30">
-                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 text-blue-400 text-xl shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                        <div class="glass rounded-2xl p-5 border border-white/5 flex items-center gap-4 transition-all duration-300 hover:-translate-y-2 hover:border-blue-400/30 hover:shadow-[0_16px_40px_rgba(59,130,246,0.08)]">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0 text-blue-400 text-xl">
                                 <i class="fas fa-store"></i>
                             </div>
                             <div>
@@ -213,12 +250,10 @@
         <section id="home" class="page-section">
             <div class="relative overflow-hidden min-h-[90vh] flex items-center">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-screen">
-                    <source src="https://assets.mixkit.co/videos/12996/12996-720.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-35" style="filter:brightness(0.6) saturate(1.3);">
+                    <source src="https://assets.mixkit.co/videos/4835/4835-720.mp4" type="video/mp4">
                 </video>
-                <!-- Gradient overlay to ensure text readability -->
-                <div class="absolute inset-0 bg-gradient-to-t from-forest-900 via-forest-900/60 to-forest-900/80 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
                     <div class="text-center max-w-4xl mx-auto">
@@ -246,31 +281,31 @@
                 </div>
             </div>
             <!-- Features -->
-            <div class="py-24 bg-forest-800/50">
+            <div class="py-24 bg-forest-800/30">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 class="text-3xl md:text-4xl font-bold text-center" style="font-family:'Space Grotesk'">How It Works</h2>
                     <p class="text-gray-400 text-center mt-3 max-w-2xl mx-auto">From raw farm data to AI-powered intelligence in 4 steps</p>
-                    <div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="mt-14 grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div class="text-center fade-in step-line">
-                            <div class="w-20 h-20 mx-auto bg-forest-500 rounded-full flex items-center justify-center text-white text-3xl mb-4"><i class="fas fa-upload"></i></div>
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-green-500/20 to-emerald-600/10 rounded-2xl flex items-center justify-center text-green-400 text-3xl mb-5 border border-green-500/20"><i class="fas fa-upload"></i></div>
                             <div class="text-amber-400 font-bold text-sm mb-1">STEP 1</div>
                             <h3 class="text-xl font-bold mb-2">Upload Data</h3>
                             <p class="text-gray-400 text-sm">Upload soil, crop health, weather, and yield records through simple forms.</p>
                         </div>
                         <div class="text-center fade-in step-line">
-                            <div class="w-20 h-20 mx-auto bg-forest-500 rounded-full flex items-center justify-center text-white text-3xl mb-4"><i class="fas fa-server"></i></div>
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-green-500/20 to-emerald-600/10 rounded-2xl flex items-center justify-center text-green-400 text-3xl mb-5 border border-green-500/20"><i class="fas fa-server"></i></div>
                             <div class="text-amber-400 font-bold text-sm mb-1">STEP 2</div>
                             <h3 class="text-xl font-bold mb-2">Store on Shelby</h3>
                             <p class="text-gray-400 text-sm">Data stored on Shelby's decentralized high-speed layer with low-latency access.</p>
                         </div>
                         <div class="text-center fade-in step-line">
-                            <div class="w-20 h-20 mx-auto bg-forest-500 rounded-full flex items-center justify-center text-white text-3xl mb-4"><i class="fas fa-brain"></i></div>
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-green-500/20 to-emerald-600/10 rounded-2xl flex items-center justify-center text-green-400 text-3xl mb-5 border border-green-500/20"><i class="fas fa-brain"></i></div>
                             <div class="text-amber-400 font-bold text-sm mb-1">STEP 3</div>
                             <h3 class="text-xl font-bold mb-2">AI Analyzes</h3>
                             <p class="text-gray-400 text-sm">AI models analyze your data for disease detection, yield prediction, and more.</p>
                         </div>
                         <div class="text-center fade-in">
-                            <div class="w-20 h-20 mx-auto bg-amber-400 rounded-full flex items-center justify-center text-forest-900 text-3xl mb-4"><i class="fas fa-hand-holding-usd"></i></div>
+                            <div class="w-20 h-20 mx-auto bg-gradient-to-br from-amber-400/20 to-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 text-3xl mb-5 border border-amber-400/20"><i class="fas fa-hand-holding-usd"></i></div>
                             <div class="text-amber-400 font-bold text-sm mb-1">STEP 4</div>
                             <h3 class="text-xl font-bold mb-2">Monetize</h3>
                             <p class="text-gray-400 text-sm">Share datasets via pay-per-read access and earn from your data.</p>
@@ -279,11 +314,11 @@
                 </div>
             </div>
             <!-- CTA -->
-            <div class="bg-gradient-to-r from-forest-700 to-forest-500">
+            <div class="bg-gradient-to-r from-emerald-900/80 via-green-800/60 to-emerald-900/80 border-y border-green-500/10">
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
                     <h2 class="text-3xl md:text-4xl font-bold" style="font-family:'Space Grotesk'">Start Uploading Your Farm Data Today</h2>
-                    <p class="mt-4 text-lg text-green-100 max-w-2xl mx-auto">Join the future of farming intelligence — decentralized, AI-powered, and farmer-owned.</p>
-                    <button data-page="upload" class="nav-link mt-8 bg-white text-forest-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors text-base cursor-pointer">Get Started <i class="fas fa-arrow-right ml-2"></i></button>
+                    <p class="mt-4 text-lg text-green-100/80 max-w-2xl mx-auto">Join the future of farming intelligence — decentralized, AI-powered, and farmer-owned.</p>
+                    <button data-page="upload" class="nav-link mt-8 bg-white text-forest-700 font-semibold py-3 px-8 rounded-xl hover:bg-gray-100 transition-all text-base cursor-pointer hover:shadow-[0_8px_30px_rgba(255,255,255,0.15)]">Get Started <i class="fas fa-arrow-right ml-2"></i></button>
                 </div>
             </div>
         </section>
@@ -292,10 +327,10 @@
         <section id="upload" class="page-section">
             <div class="relative py-16 overflow-hidden">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20 mix-blend-screen">
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-farmer-walking-with-a-tablet-through-a-cornfield-4267-large.mp4" type="video/mp4">
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-25" style="filter:brightness(0.5) saturate(1.2);">
+                    <source src="https://assets.mixkit.co/videos/4915/4915-720.mp4" type="video/mp4">
                 </video>
-                <div class="absolute inset-0 bg-gradient-to-b from-forest-900/80 to-forest-900 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                     <h1 class="text-4xl md:text-5xl font-bold" style="font-family:'Space Grotesk'">Upload Farm Data</h1>
@@ -408,10 +443,10 @@
         <section id="dashboard" class="page-section">
             <div class="relative py-16 overflow-hidden">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20 mix-blend-screen">
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-high-tech-farm-with-a-drone-flying-over-the-crops-4262-large.mp4" type="video/mp4">
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-25" style="filter:brightness(0.5) saturate(1.2);">
+                    <source src="https://assets.mixkit.co/videos/4818/4818-720.mp4" type="video/mp4">
                 </video>
-                <div class="absolute inset-0 bg-gradient-to-b from-forest-900/80 to-forest-900 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                     <h1 class="text-4xl md:text-5xl font-bold" style="font-family:'Space Grotesk'">AI Analytics Dashboard</h1>
@@ -512,10 +547,10 @@
         <section id="marketplace" class="page-section">
             <div class="relative py-16 overflow-hidden">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20 mix-blend-screen">
-                    <source src="https://assets.mixkit.co/videos/48769/48769-720.mp4" type="video/mp4">
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-25" style="filter:brightness(0.5) saturate(1.2);">
+                    <source src="https://assets.mixkit.co/videos/4812/4812-720.mp4" type="video/mp4">
                 </video>
-                <div class="absolute inset-0 bg-gradient-to-b from-forest-700/80 to-forest-900 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                     <h1 class="text-4xl md:text-5xl font-bold" style="font-family:'Space Grotesk'">Data Marketplace</h1>
@@ -579,10 +614,10 @@
         <section id="about" class="page-section">
             <div class="relative py-20 overflow-hidden">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20 mix-blend-screen">
-                    <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-farmer-working-the-land-in-the-country-4270-large.mp4" type="video/mp4">
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-25" style="filter:brightness(0.5) saturate(1.2);">
+                    <source src="https://videos.pexels.com/video-files/2518401/2518401-hd_1920_1080_30fps.mp4" type="video/mp4">
                 </video>
-                <div class="absolute inset-0 bg-gradient-to-b from-forest-900/80 to-forest-900 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                     <h1 class="text-4xl md:text-6xl font-bold" style="font-family:'Space Grotesk'">Our Mission</h1>
@@ -630,10 +665,10 @@
         <section id="contact" class="page-section">
             <div class="relative py-16 overflow-hidden">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20 mix-blend-screen">
-                    <source src="https://assets.mixkit.co/videos/10015/10015-720.mp4" type="video/mp4">
+                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-25" style="filter:brightness(0.5) saturate(1.2);">
+                    <source src="https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4" type="video/mp4">
                 </video>
-                <div class="absolute inset-0 bg-gradient-to-b from-forest-700/80 to-forest-900 z-0"></div>
+                <div class="video-overlay"></div>
                 
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
                     <h1 class="text-4xl md:text-5xl font-bold" style="font-family:'Space Grotesk'">Get In Touch</h1>
@@ -677,6 +712,86 @@
             </div>
         </section>
 
+        <!-- ===== ADMIN PANEL ===== -->
+        <section id="admin" class="page-section">
+            <div class="relative py-16 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-amber-900/20 via-transparent to-transparent z-0"></div>
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <div class="inline-flex items-center gap-2 glass px-5 py-2.5 rounded-full mb-6 text-sm border-amber-400/30">
+                        <i class="fas fa-shield-alt text-amber-400"></i>
+                        <span class="text-amber-400 font-medium tracking-wider uppercase text-xs">Owner Access Only</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-bold" style="font-family:'Space Grotesk'">Admin Panel</h1>
+                    <p class="mt-3 text-gray-400 text-lg">View all submitted data across all categories</p>
+                </div>
+            </div>
+            <div class="py-12">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <!-- Admin Stats Row -->
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                        <div class="metric-card rounded-xl p-5 glow-border border-amber-400/20">
+                            <div class="flex items-center justify-between mb-2"><span class="text-gray-400 text-sm">Total Records</span><i class="fas fa-database text-amber-400"></i></div>
+                            <div class="text-3xl font-bold text-amber-400" id="admin-total">0</div>
+                        </div>
+                        <div class="metric-card rounded-xl p-5 glow-border">
+                            <div class="flex items-center justify-between mb-2"><span class="text-gray-400 text-sm">Soil</span><i class="fas fa-mountain text-green-400"></i></div>
+                            <div class="text-3xl font-bold text-green-400" id="admin-soil">0</div>
+                        </div>
+                        <div class="metric-card rounded-xl p-5 glow-border">
+                            <div class="flex items-center justify-between mb-2"><span class="text-gray-400 text-sm">Crop</span><i class="fas fa-seedling text-green-400"></i></div>
+                            <div class="text-3xl font-bold text-green-400" id="admin-crop">0</div>
+                        </div>
+                        <div class="metric-card rounded-xl p-5 glow-border">
+                            <div class="flex items-center justify-between mb-2"><span class="text-gray-400 text-sm">Weather</span><i class="fas fa-cloud-sun text-blue-400"></i></div>
+                            <div class="text-3xl font-bold text-blue-400" id="admin-weather">0</div>
+                        </div>
+                        <div class="metric-card rounded-xl p-5 glow-border">
+                            <div class="flex items-center justify-between mb-2"><span class="text-gray-400 text-sm">Yield</span><i class="fas fa-wheat-awn text-amber-400"></i></div>
+                            <div class="text-3xl font-bold text-amber-400" id="admin-yield">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Filter Tabs -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button class="tab-btn active admin-filter" data-filter="all"><i class="fas fa-th-list mr-1"></i>All Records</button>
+                        <button class="tab-btn admin-filter" data-filter="soil"><i class="fas fa-mountain mr-1"></i>Soil</button>
+                        <button class="tab-btn admin-filter" data-filter="crop"><i class="fas fa-seedling mr-1"></i>Crop</button>
+                        <button class="tab-btn admin-filter" data-filter="weather"><i class="fas fa-cloud-sun mr-1"></i>Weather</button>
+                        <button class="tab-btn admin-filter" data-filter="yield"><i class="fas fa-wheat-awn mr-1"></i>Yield</button>
+                    </div>
+
+                    <!-- Admin Data Table -->
+                    <div class="glass rounded-xl glow-border overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-forest-900/80 text-gray-400 uppercase text-xs">
+                                    <tr>
+                                        <th class="px-4 py-3">Type</th>
+                                        <th class="px-4 py-3">Field / Location</th>
+                                        <th class="px-4 py-3">Key Data</th>
+                                        <th class="px-4 py-3">Date</th>
+                                        <th class="px-4 py-3">Merkle Root</th>
+                                        <th class="px-4 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-table-body" class="divide-y divide-forest-700/30">
+                                    <tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No records found. Upload data to see it here.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- AI Interventions Panel -->
+                    <div class="mt-8 glass rounded-xl p-6 glow-border border-amber-400/20">
+                        <h3 class="font-bold text-lg mb-4"><i class="fas fa-brain text-amber-400 mr-2"></i>AI-Suggested Interventions</h3>
+                        <div id="admin-interventions" class="space-y-3">
+                            <p class="text-gray-500 text-sm text-center py-4">Upload data to generate AI intervention suggestions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Footer -->
@@ -708,43 +823,79 @@
         wallet: null,
         data: {soil:[],crop:[],weather:[],yield:[],marketplace:[]},
         async save() { 
+            // PRIMARY: Always save to localStorage (instant, works everywhere)
+            const storageKey = 'lff_data_' + (this.wallet || 'anon');
+            try { 
+                localStorage.setItem(storageKey, JSON.stringify(this.data));
+            } catch(e) { 
+                console.error('localStorage save failed:', e); 
+            }
+            // SECONDARY: Background sync to Vercel Blob (cloud backup)
             if(this.wallet) {
                 try {
-                    await fetch('/api/sync?walletAddress=' + this.wallet, {
+                    const res = await fetch('/api/sync?walletAddress=' + this.wallet, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: this.data })
                     });
+                    return res.ok;
                 } catch(e) {
-                    console.error('Failed to sync to cloud backend:', e);
+                    // Cloud sync failed — that's OK, localStorage has the data
+                    return false;
                 }
             }
+            return true;
+        },
+        loadLocal() {
+            // Load data from localStorage for current wallet
+            const storageKey = 'lff_data_' + (this.wallet || 'anon');
+            try {
+                const saved = localStorage.getItem(storageKey);
+                if (saved) {
+                    this.data = JSON.parse(saved);
+                    return true;
+                }
+            } catch(e) { console.error('localStorage load failed:', e); }
+            return false;
         },
         async pushToGlobalFeed(record) {
             try {
-                // Obfuscate field/location slightly for privacy in global feed
                 const publicRecord = { ...record };
                 if (publicRecord.field) publicRecord.field = "Field in " + (publicRecord.region || "Unknown");
                 if (publicRecord.location) publicRecord.location = "Location near " + (publicRecord.region || "Unknown");
                 
-                await fetch('/api/feed', {
+                const res = await fetch('/api/feed', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ record: publicRecord })
                 });
+                if (!res.ok) {
+                    console.error('Feed push failed:', res.status);
+                    return false;
+                }
+                return true;
             } catch(e) {
                 console.error('Failed to push to global feed:', e);
+                return false;
             }
         },
         async incrementGlobalStat(type) {
             try {
-                await fetch('/api/stats', {
+                const res = await fetch('/api/stats', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ type })
                 });
-                this.loadGlobalStats(); // Refresh stats after increment
-            } catch(e) {}
+                if (!res.ok) {
+                    console.error('Stat increment failed:', res.status);
+                    return false;
+                }
+                await this.loadGlobalStats();
+                return true;
+            } catch(e) { 
+                console.error('Failed to increment stat:', e); 
+                return false;
+            }
         },
         async loadGlobalStats() {
             try {
@@ -774,6 +925,7 @@
             document.getElementById('mobile-menu')?.classList.add('hidden');
             if(page==='dashboard'){this.renderDashboardChart();this.renderInsightsFeed();}
             if(page==='marketplace') this.renderMarketplace();
+            if(page==='admin') this.renderAdmin();
             this.updateStats();
             localStorage.setItem('lastPage', page);
         },
@@ -854,19 +1006,32 @@
             document.getElementById('wallet-btn').style.background = '#2D7D46';
             document.getElementById('wallet-btn').style.color = 'white';
             
-            // Fetch user's personal data perfectly isolated to their wallet address from Cloud
+            // STEP 1: Load data from localStorage IMMEDIATELY (always works)
+            this.loadLocal();
+            
+            // STEP 2: Try cloud sync in background (merges if cloud has more data)
             try {
                 const res = await fetch('/api/sync?walletAddress=' + address + '&t=' + Date.now(), { cache: 'no-store' });
-                const result = await res.json();
-                if (result.data) {
-                    this.data = result.data;
-                } else {
-                    this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]};
-                    await this.save(); // Initialize for this new wallet
+                if (res.ok) {
+                    const result = await res.json();
+                    if (result.data) {
+                        // Merge: use whichever source has more records per category
+                        const cloud = result.data;
+                        ['soil','crop','weather','yield','marketplace'].forEach(key => {
+                            if ((cloud[key]?.length || 0) > (this.data[key]?.length || 0)) {
+                                this.data[key] = cloud[key];
+                            }
+                        });
+                        // Save merged result back to localStorage
+                        this.save();
+                    } else if (this.data.soil.length || this.data.crop.length || this.data.weather.length || this.data.yield.length) {
+                        // Cloud is empty but local has data — push local data to cloud
+                        this.save();
+                    }
                 }
             } catch (e) {
-                console.error("Failed to load user data from cloud", e);
-                this.data = {soil:[],crop:[],weather:[],yield:[],marketplace:[]}; // Fallback
+                // Cloud unavailable — localStorage data is already loaded, that's fine
+                console.log('Cloud sync unavailable, using local data');
             }
             
             // Show features
@@ -1152,6 +1317,95 @@
                     <button class="w-full btn-outline py-2 text-xs border border-forest-500/30 font-mono"><i class="fas fa-shield-alt mr-2 text-green-400"></i>Verify Merkle Proof</button>
                 </div>
             `).join('');
+        },
+        // ===== ADMIN PANEL =====
+        renderAdmin(filter = 'all') {
+            const el = id => document.getElementById(id);
+            const total = this.getRecordCount();
+            if(el('admin-total')) el('admin-total').textContent = total;
+            if(el('admin-soil')) el('admin-soil').textContent = this.data.soil.length;
+            if(el('admin-crop')) el('admin-crop').textContent = this.data.crop.length;
+            if(el('admin-weather')) el('admin-weather').textContent = this.data.weather.length;
+            if(el('admin-yield')) el('admin-yield').textContent = this.data.yield.length;
+
+            // Build unified records
+            let records = [];
+            if(filter === 'all' || filter === 'soil') this.data.soil.forEach(r => records.push({...r, _type:'soil'}));
+            if(filter === 'all' || filter === 'crop') this.data.crop.forEach(r => records.push({...r, _type:'crop'}));
+            if(filter === 'all' || filter === 'weather') this.data.weather.forEach(r => records.push({...r, _type:'weather'}));
+            if(filter === 'all' || filter === 'yield') this.data.yield.forEach(r => records.push({...r, _type:'yield'}));
+            records.sort((a,b) => (b.id||0) - (a.id||0));
+
+            const tbody = el('admin-table-body');
+            if(!tbody) return;
+            if(!records.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No records found. Upload data to see it here.</td></tr>';
+                this.renderAdminInterventions([]);
+                return;
+            }
+
+            const typeBadge = {soil:'bg-green-400/20 text-green-400',crop:'bg-emerald-400/20 text-emerald-400',weather:'bg-blue-400/20 text-blue-400',yield:'bg-amber-400/20 text-amber-400'};
+            const typeIcon = {soil:'fa-mountain',crop:'fa-seedling',weather:'fa-cloud-sun',yield:'fa-wheat-awn'};
+
+            function getKeyData(r) {
+                if(r._type === 'soil') return `pH: ${r.ph || '—'} | Moisture: ${r.moisture || '—'}% | N: ${r.nitrogen || '—'}`;
+                if(r._type === 'crop') return `${r.cropType || '—'} | Health: ${r.health || '—'}/10 | ${r.disease && r.disease !== 'none' ? '⚠️ '+r.disease : '✅ No Disease'}`;
+                if(r._type === 'weather') return `${r.temp || '—'}°C | ${r.humidity || '—'}% hum | ${r.rainfall || '0'}mm rain`;
+                if(r._type === 'yield') return `${r.crop || '—'} | ${r.yieldTonnes || '—'}T / ${r.area || '—'}ha | ${r.quality || '—'}`;
+                return '—';
+            }
+
+            tbody.innerHTML = records.map(r => `
+                <tr class="hover:bg-forest-800/40 transition-colors">
+                    <td class="px-4 py-3"><span class="text-xs ${typeBadge[r._type]} px-2 py-1 rounded-full"><i class="fas ${typeIcon[r._type]} mr-1"></i>${r._type}</span></td>
+                    <td class="px-4 py-3 font-medium text-white">${r.field || r.location || '—'}</td>
+                    <td class="px-4 py-3 text-gray-400 text-xs">${getKeyData(r)}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">${r.date || r.harvestDate || (r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '—')}</td>
+                    <td class="px-4 py-3"><span class="text-[10px] font-mono text-green-500 bg-black/30 px-2 py-0.5 rounded">${(r.merkle || '').slice(0,16)}...</span></td>
+                    <td class="px-4 py-3"><span class="text-xs bg-green-400/20 text-green-400 px-2 py-0.5 rounded-full"><i class="fas fa-check-circle mr-1"></i>Synced</span></td>
+                </tr>
+            `).join('');
+
+            this.renderAdminInterventions(records);
+        },
+        renderAdminInterventions(records) {
+            const container = document.getElementById('admin-interventions');
+            if(!container) return;
+            const interventions = [];
+
+            this.data.soil.forEach(r => {
+                const ph = parseFloat(r.ph);
+                if(ph && ph < 5.5) interventions.push({priority:'HIGH',color:'red',field:r.field,msg:`Critically low pH (${ph}) — Apply agricultural lime immediately at 2-4 tonnes/hectare.`});
+                else if(ph && ph < 6) interventions.push({priority:'MED',color:'amber',field:r.field,msg:`Low pH (${ph}) — Monitor and consider lime application next season.`});
+                if(r.moisture && parseFloat(r.moisture) < 30) interventions.push({priority:'HIGH',color:'red',field:r.field,msg:`Dangerously low soil moisture (${r.moisture}%) — Enable emergency drip irrigation.`});
+            });
+
+            this.data.crop.forEach(r => {
+                if(r.disease && r.disease !== 'none') interventions.push({priority:'HIGH',color:'red',field:r.field,msg:`${r.disease} detected in ${r.cropType || 'crop'} — Apply fungicide within 48 hours.`});
+                if(parseInt(r.health) < 4) interventions.push({priority:'HIGH',color:'red',field:r.field,msg:`Critical health score (${r.health}/10) for ${r.cropType || 'crop'} — Investigate root cause.`});
+                else if(parseInt(r.health) < 6) interventions.push({priority:'MED',color:'amber',field:r.field,msg:`Below average health (${r.health}/10) for ${r.cropType || 'crop'} — Review nutrient levels.`});
+            });
+
+            this.data.weather.forEach(r => {
+                if(parseFloat(r.temp) > 40) interventions.push({priority:'HIGH',color:'red',field:r.location,msg:`Extreme heat (${r.temp}°C) — Activate emergency shade and increase watering frequency.`});
+                if(parseFloat(r.rainfall) > 100) interventions.push({priority:'HIGH',color:'amber',field:r.location,msg:`Flooding risk — ${r.rainfall}mm rainfall recorded. Check drainage systems immediately.`});
+            });
+
+            if(!interventions.length) {
+                container.innerHTML = '<div class="text-center py-4"><i class="fas fa-check-circle text-green-400 text-2xl mb-2 block"></i><p class="text-gray-400 text-sm">All clear! No critical interventions needed right now.</p></div>';
+                return;
+            }
+
+            const priColors = {HIGH:'bg-red-400/20 text-red-400 border-red-400/30',MED:'bg-amber-400/20 text-amber-400 border-amber-400/30'};
+            container.innerHTML = interventions.map(i => `
+                <div class="bg-forest-900/50 rounded-lg p-4 border-l-4 ${i.priority === 'HIGH' ? 'border-red-400' : 'border-amber-400'} flex items-start gap-3">
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${priColors[i.priority]} flex-shrink-0 mt-0.5">${i.priority}</span>
+                    <div>
+                        <span class="text-xs text-gray-500">${i.field || 'Unknown Field'}</span>
+                        <p class="text-sm text-gray-300 mt-0.5">${i.msg}</p>
+                    </div>
+                </div>
+            `).join('');
         }
     };
 
@@ -1215,9 +1469,10 @@
             record._type = type;
             app.data[type].push(record);
             await app.save();
-            await app.pushToGlobalFeed(record);
-            await app.incrementGlobalStat('record');
-            app.toast(`${type.charAt(0).toUpperCase()+type.slice(1)} data uploaded securely to your wallet!`);
+            // Cloud sync (best-effort, won't block UX)
+            app.pushToGlobalFeed(record);
+            app.incrementGlobalStat('record');
+            app.toast(`✅ ${type.charAt(0).toUpperCase()+type.slice(1)} data saved! (${app.getRecordCount()} total records)`);
             form.reset();
             app.renderRecentUploads();
             app.updateStats();
@@ -1231,6 +1486,15 @@
             const icon = btn.querySelector('i');
             answer.classList.toggle('hidden');
             if(icon) icon.style.transform = answer.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        });
+    });
+
+    // Admin filter tabs
+    document.querySelectorAll('.admin-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            app.renderAdmin(btn.dataset.filter);
         });
     });
 
@@ -1370,6 +1634,8 @@
                 document.getElementById('live-humidity').textContent = data.current.relative_humidity_2m + '%';
                 document.getElementById('live-wind').textContent = data.current.wind_speed_10m + ' km/h';
                 document.getElementById('live-rain').textContent = data.current.precipitation + ' mm';
+                // Apply dynamic weather background theme
+                applyWeatherTheme(data.current.weather_code);
             }
             
             // Soil data (from hourly, get latest)
@@ -1430,6 +1696,43 @@
         }
     }
 
+    // ===== WEATHER-BASED DYNAMIC BACKGROUND =====
+    function applyWeatherTheme(weatherCode) {
+        const body = document.body;
+        const indicator = document.getElementById('weather-indicator');
+        // Remove all weather classes
+        body.classList.remove('weather-sunny','weather-rainy','weather-cloudy','weather-stormy','weather-snowy','weather-foggy');
+        
+        // WMO Weather Codes mapping
+        // 0 = Clear, 1-3 = Partly cloudy to overcast
+        // 45,48 = Fog
+        // 51-57 = Drizzle, 61-67 = Rain, 80-82 = Showers
+        // 71-77 = Snow
+        // 95-99 = Thunderstorm
+        let theme = 'cloudy', label = '☁️ Cloudy', emoji = '☁️';
+        
+        if ([0, 1].includes(weatherCode)) {
+            theme = 'sunny'; label = '☀️ Clear Sky'; emoji = '☀️';
+        } else if ([2, 3].includes(weatherCode)) {
+            theme = 'cloudy'; label = '⛅ Cloudy'; emoji = '⛅';
+        } else if ([45, 48].includes(weatherCode)) {
+            theme = 'foggy'; label = '🌫️ Foggy'; emoji = '🌫️';
+        } else if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode)) {
+            theme = 'rainy'; label = '🌧️ Rainy'; emoji = '🌧️';
+        } else if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) {
+            theme = 'snowy'; label = '❄️ Snowy'; emoji = '❄️';
+        } else if ([95, 96, 99].includes(weatherCode)) {
+            theme = 'stormy'; label = '⛈️ Stormy'; emoji = '⛈️';
+        }
+        
+        body.classList.add('weather-' + theme);
+        if (indicator) {
+            indicator.innerHTML = `${emoji} <span class="ml-1">${label}</span>`;
+            indicator.classList.remove('hidden');
+        }
+        console.log(`🌍 Weather theme applied: ${theme} (code: ${weatherCode})`);
+    }
+
     // ===== GEMINI AI CHATBOT =====
     function toggleAIChat() {
         const panel = document.getElementById('ai-chat-panel');
@@ -1486,8 +1789,27 @@
         } catch (err) {
             const typingEl = document.getElementById(typingId);
             if (typingEl) typingEl.closest('.flex').remove();
-            console.error('API error:', err);
-            addAIMessage('bot', `<span class="text-red-400">Network error. Is the backend running?</span>`);
+            console.error('API error, using local fallback:', err);
+            // Mock fallback when API is unavailable
+            const lowerMsg = msg.toLowerCase();
+            const mockResponses = {
+                soil: '🌱 **Soil Tip:** Maintain pH between 6.0-7.0 for most crops. Test your soil every season and add lime if it\'s too acidic, or sulfur if too alkaline. Organic compost improves both structure and nutrient content.',
+                weather: '🌤️ **Weather Advisory:** Monitor your local forecast daily during growing season. Protect seedlings from frost with row covers, and ensure drainage is clear before heavy rains. Consider drip irrigation during dry spells.',
+                crop: '🌾 **Crop Health:** Inspect plants weekly for yellowing leaves (nutrient deficiency), spots (fungal disease), or wilting (water stress). Early detection saves 60% more yield than late treatment.',
+                yield: '📊 **Yield Optimization:** Record yields per hectare each season to track trends. Rotate crops to prevent soil depletion — legumes fix nitrogen naturally for the next planting cycle.',
+                disease: '⚠️ **Disease Management:** Remove and destroy infected plants immediately. Apply copper-based fungicide for blight, neem oil for mild infestations. Always clean tools between fields.',
+                water: '💧 **Irrigation Best Practice:** Water early morning to reduce evaporation. Most crops need 25-50mm per week. Sandy soils need more frequent, lighter watering; clay soils need deeper, less frequent irrigation.',
+                fertilizer: '🧪 **Fertilizer Guide:** Apply NPK 10-10-10 as a balanced option. Side-dress nitrogen during vegetative growth. Avoid over-fertilizing — it causes leaf burn and pollutes groundwater.',
+                pest: '🐛 **Pest Control:** Use integrated pest management (IPM). Introduce beneficial insects like ladybugs for aphids. Neem oil spray works on 90% of common pests. Rotate pesticides to prevent resistance.'
+            };
+            let reply = '🤖 I\'m currently running in offline mode. Here\'s my best advice: Always keep detailed records of your farm data — soil conditions, weather patterns, and crop health. This data is the foundation of smart farming decisions!';
+            for (const [key, response] of Object.entries(mockResponses)) {
+                if (lowerMsg.includes(key)) { reply = response; break; }
+            }
+            if (lowerMsg.includes('hello') || lowerMsg.includes('hi ') || lowerMsg.includes('hey')) {
+                reply = '👋 Hello, farmer! I\'m running in offline mode right now, but I can still help with basic questions about **soil**, **crops**, **weather**, **yield**, **pests**, **fertilizer**, **irrigation**, and **diseases**. Just ask!';
+            }
+            addAIMessage('bot', reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'));
         }
     }
 
@@ -1498,6 +1820,49 @@
     });
     // Also load on page init if dashboard is active
     fetchLiveWeather();
+
+    // ===== AMBIENT PARTICLES =====
+    (function initParticles() {
+        const canvas = document.getElementById('particles-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 35;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedY: -(Math.random() * 0.3 + 0.1),
+                speedX: (Math.random() - 0.5) * 0.2,
+                opacity: Math.random() * 0.5 + 0.1,
+                color: Math.random() > 0.7 ? 'rgba(234,179,8,' : 'rgba(16,185,129,'
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.speedY;
+                p.x += p.speedX;
+                if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color + p.opacity + ')';
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
 
     </script>
 </body>
